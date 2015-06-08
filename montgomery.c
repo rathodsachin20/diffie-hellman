@@ -1,6 +1,7 @@
 #include "montgomery.h"
 #include "bn_utils.h"
 
+<<<<<<< HEAD
 int egcd(BIGNUM* a, BIGNUM* b, BIGNUM* a_, BIGNUM* b_){
     BIGNUM *g0, *g1, *u0, *u1, *v0, *v1, *q, *tmp, *mul;
     BN_CTX * ctx = BN_CTX_new();
@@ -203,3 +204,6 @@ int mod_exp_montgomery(BIGNUM* result, BIGNUM* m, BIGNUM* e, BIGNUM* n){
     BN_clear_free(one);
     return 1;
 }
+=======
+
+>>>>>>> 12179968ed2901fc4c7fd0ad7f3f948c3bdbefeb
