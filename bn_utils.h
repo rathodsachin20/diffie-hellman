@@ -6,7 +6,7 @@
 
 int get_random_prime(int bits, BIGNUM* a);
 void print_bn(BIGNUM* bn);
-int mod_exp_bin(BIGNUM* result, BIGNUM* a, BIGNUM* b, BIGNUM* n);
+int mod_exp_bin(BIGNUM* result, BIGNUM* m, BIGNUM* e, BIGNUM* n);
 
 
 #endif

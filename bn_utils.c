@@ -37,27 +37,33 @@ int mod_exp_bin(BIGNUM* result, BIGNUM* m, BIGNUM* e, BIGNUM* n){
             break;
     }
 
-    //int first = 1;
+    // Handle first byte
     if(to[i] & 128){  // First bit is 1
-        BN_one(result);
-    }
-    else{
         BN_copy(result, m);
     }
+    else{
+        BN_one(result);
+    }
+
+    c = to[i];
+    for (j=6; j>=0; j--){
+        BN_mod_sqr(result, result, n, ctx);
+        if(c&(1<<j)){ //TODO:bit is 1, multiply
+            BN_mod_mul(result, result, m, n, ctx);
+        }
+    }
+    i++;
+
+    // Handle remaining bytes
     for(i; i<bin_len; i++){
         c = to[i];
-        //c_int = (int)c;
         for (j=7; j>=0; j--){
-            bit = 0;
-            bit = ((c & (1<<j))!=0);
-            printf("%d",bit);
-
+            
             //TODO:square
             BN_mod_sqr(result, result, n, ctx);
             if(c&(1<<j)){ //TODO:bit is 1, multiply
                 BN_mod_mul(result, result, m, n, ctx);
             }
-
         }
     }
 
