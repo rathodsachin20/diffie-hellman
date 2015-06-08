@@ -1,12 +1,12 @@
 #include "bn_utils.h"
 
 
-BIGNUM* get_random_prime(int bits){
-    BIGNUM *a;
-    a = BN_new();
+int get_random_prime(int bits, BIGNUM* a){
+    //BIGNUM *a;
+    //a = BN_new();
 
-    BN_generate_prime(a, bits, 0, NULL, NULL, NULL, NULL);
-    return a;
+    BN_generate_prime(a, bits, 1, NULL, NULL, NULL, NULL); // create 'safe' prime
+    return 1;
 }
 
 void print_bn(BIGNUM* bn){
@@ -16,12 +16,13 @@ void print_bn(BIGNUM* bn){
 
 
 
-BIGNUM* mod_exp_bin(BIGNUM* a, BIGNUM* b, BIGNUM* n){
-    BIGNUM *result;
-    result = BN_new();
-    int len = BN_num_bytes(b);
+int mod_exp_bin(BIGNUM* result, BIGNUM* m, BIGNUM* e, BIGNUM* n){
+    //BIGNUM *result;
+    BN_CTX * ctx = BN_CTX_new();
+    //result = BN_new();
+    int len = BN_num_bytes(e);
     char* to = (char*) malloc(len*sizeof(char));
-    int bin_len = BN_bn2bin(b, to);
+    int bin_len = BN_bn2bin(e, to);
     //printf("bin:%s\n", to);
     int i, j;
     char c;
@@ -29,19 +30,37 @@ BIGNUM* mod_exp_bin(BIGNUM* a, BIGNUM* b, BIGNUM* n){
     int bit = 0;
 
     //TODO:intialize: get to first bit '1', set result value, make next for loop start from next bit
-    for(i=0; i<bin_len; i++){
+    i = 0;
+    while(to[i]=='0'){
+        i++;
+        if(i==bin_len)
+            break;
+    }
+
+    //int first = 1;
+    if(to[i] & 128){  // First bit is 1
+        BN_one(result);
+    }
+    else{
+        BN_copy(result, m);
+    }
+    for(i; i<bin_len; i++){
         c = to[i];
         //c_int = (int)c;
         for (j=7; j>=0; j--){
             bit = 0;
             bit = ((c & (1<<j))!=0);
             printf("%d",bit);
+
             //TODO:square
+            BN_mod_sqr(result, result, n, ctx);
             if(c&(1<<j)){ //TODO:bit is 1, multiply
+                BN_mod_mul(result, result, m, n, ctx);
             }
 
         }
     }
 
-    return result;
+    BN_CTX_free(ctx);
+    return 1;
 }

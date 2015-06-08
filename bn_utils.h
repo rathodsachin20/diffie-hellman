@@ -4,9 +4,9 @@
 #include <openssl/dh.h>
 #include <openssl/bn.h>
 
-BIGNUM* get_random_prime(int bits);
+int get_random_prime(int bits, BIGNUM* a);
 void print_bn(BIGNUM* bn);
-BIGNUM* mod_exp_bin(BIGNUM* a, BIGNUM* b, BIGNUM* n);
+int mod_exp_bin(BIGNUM* result, BIGNUM* a, BIGNUM* b, BIGNUM* n);
 
 
 #endif
