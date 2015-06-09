@@ -48,9 +48,11 @@ int mod_exp_bin(BIGNUM* result, BIGNUM* m, BIGNUM* e, BIGNUM* n){
 
     c = to[i];
     for (j=6; j>=0; j--){
-        BN_mod_sqr(result, result, n, ctx);
-        if(c&(1<<j)){ //TODO:bit is 1, multiply
-            BN_mod_mul(result, result, m, n, ctx);
+        BN_sqr(result, result, ctx);
+        BN_mod(result, result, n, ctx);
+        if(c&(1<<j)){
+            BN_mul(result, result, m, ctx);
+            BN_mod(result, result, n, ctx);
         }
     }
     i++;
@@ -60,10 +62,11 @@ int mod_exp_bin(BIGNUM* result, BIGNUM* m, BIGNUM* e, BIGNUM* n){
         c = to[i];
         for (j=7; j>=0; j--){
             
-            //TODO:square
-            BN_mod_sqr(result, result, n, ctx);
-            if(c&(1<<j)){ //TODO:bit is 1, multiply
-                BN_mod_mul(result, result, m, n, ctx);
+            BN_sqr(result, result, ctx);
+            BN_mod(result, result, n, ctx);
+            if(c&(1<<j)){
+                BN_mul(result, result, m, ctx);
+                BN_mod(result, result, n, ctx);
             }
         }
     }

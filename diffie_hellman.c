@@ -1,7 +1,7 @@
 #include "diffie_hellman.h"
 
 int diffie_hellman(int random, int nbits){
-    struct timespec tstart = {0,0}, tend = {0,0}, tdiff={0,0};
+    struct timespec tstart = {0,0}, tend = {0,0}, tdiff1={0,0}, tdiff2={0,0}, tavg={0,0};
     BIGNUM *p, *g, *a, *b, *tmp, *key_alice, *key_bob;
     BN_CTX * ctx = BN_CTX_new();
     p = BN_new();
@@ -11,6 +11,7 @@ int diffie_hellman(int random, int nbits){
     tmp = BN_new();
     key_alice = BN_new();
     key_bob = BN_new();
+    printf("=========> Number of bits:%d <==========\n", nbits);
     if(random == 1){
         if(nbits < 8){
             printf("Try again with number of bits >= 8\n");
@@ -31,7 +32,6 @@ int diffie_hellman(int random, int nbits){
         BN_hex2bn(&p, df_p_hex1024_str); 
         BN_hex2bn(&g, df_g_hex1024_str);
     }
-    printf("=========> Number of bits:%d <==========\n", nbits);
     printf("Generating random prime a.\n");
     fflush(stdout);
     get_random_prime(nbits, a, 0);
@@ -56,8 +56,9 @@ int diffie_hellman(int random, int nbits){
     mod_exp_bin(key_alice, tmp, b, p);  // g^ab (mod p)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
 
-    tdiff = diff(tstart, tend);
-    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+    tdiff1 = diff(tstart, tend);
+    printf("Time taken:");
+    print_time(tdiff1);
     printf("Alice's key:\n");
     print_bn(key_alice);
 
@@ -66,11 +67,15 @@ int diffie_hellman(int random, int nbits){
     mod_exp_bin(key_bob, tmp, a, p);  // g^a (mod p)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
 
-    tdiff = diff(tstart, tend);
-    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+    tdiff2 = diff(tstart, tend);
+    printf("Time taken:");
+    print_time(tdiff2);
     printf("Bob's key:\n");
     print_bn(key_bob);
 
+    tavg = avg(tdiff1, tdiff2);
+    printf("======> Avg Time taken:");
+    print_time(tavg);
     if(!BN_cmp(key_alice, key_bob)){
         printf("Keys match! :)\n");
     }
@@ -86,8 +91,9 @@ int diffie_hellman(int random, int nbits){
     mod_exp_montgomery(key_alice, tmp, b, p);  // g^a (mod p)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
 
-    tdiff = diff(tstart, tend);
-    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+    tdiff1 = diff(tstart, tend);
+    printf("Time taken:");
+    print_time(tdiff1);
 
     printf("Alice's key:\n");
     print_bn(key_alice);
@@ -97,11 +103,15 @@ int diffie_hellman(int random, int nbits){
     mod_exp_montgomery(key_bob, tmp, a, p);  // g^ab (mod p)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
 
-    tdiff = diff(tstart, tend);
-    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+    tdiff2 = diff(tstart, tend);
+    printf("Time taken:");
+    print_time(tdiff2);
     printf("Bob's key:\n");
     print_bn(key_bob);
 
+    tavg = avg(tdiff1, tdiff2);
+    printf("======> Avg Time taken:");
+    print_time(tavg);
     if(!BN_cmp(key_alice, key_bob)){
         printf("Keys match! :)\n");
     }
@@ -117,8 +127,9 @@ int diffie_hellman(int random, int nbits){
     BN_mod_exp(key_alice, tmp, b, p, ctx);  // g^a (mod p)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
 
-    tdiff = diff(tstart, tend);
-    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+    tdiff1 = diff(tstart, tend);
+    printf("Time taken:");
+    print_time(tdiff1);
 
     printf("Alice's key:\n");
     print_bn(key_alice);
@@ -128,11 +139,15 @@ int diffie_hellman(int random, int nbits){
     BN_mod_exp(key_bob, tmp, a, p, ctx);  // g^ab (mod p)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
 
-    tdiff = diff(tstart, tend);
-    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+    tdiff2 = diff(tstart, tend);
+    printf("Time taken:");
+    print_time(tdiff2);
     printf("Bob's key:\n");
     print_bn(key_bob);
 
+    tavg = avg(tdiff1, tdiff2);
+    printf("=======> Avg Time taken:");
+    print_time(tavg);
     if(!BN_cmp(key_alice, key_bob)){
         printf("Keys match! :)\n");
     }

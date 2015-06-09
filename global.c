@@ -35,3 +35,27 @@ timespec add(timespec t1, timespec t2){
     result.tv_nsec += nsec % 1000000000;
     return result;
 }
+
+timespec avg(timespec t1, timespec t2){
+    timespec result;
+    result.tv_sec = t1.tv_sec + t2.tv_sec;
+    if(result.tv_sec % 2 == 0){
+        result.tv_sec /= 2;
+        result.tv_nsec = (t1.tv_nsec + t2.tv_nsec)/2;
+    }
+    else {
+        result.tv_sec /= 2;
+        result.tv_nsec = (t1.tv_nsec + t2.tv_nsec)/2;
+        result.tv_nsec += 500000000;
+        if(result.tv_nsec > 1000000000){
+            result.tv_sec += 1;
+            result.tv_nsec = result.tv_nsec % 1000000000;
+        }
+    }
+    return result;
+}
+
+void print_time(timespec t){
+    printf("%lds %ldnsec = %.9f s\n", t.tv_sec, t.tv_nsec, (float)(t.tv_sec*1000000000+t.tv_nsec)/1000000000);
+}
+

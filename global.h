@@ -23,5 +23,7 @@ extern const char df_g_hex2048_str[];
 
 timespec diff(timespec start, timespec end);
 timespec add(timespec t1, timespec t2);
+timespec avg(timespec t1, timespec t2);
+void print_time(timespec t);
 
 #endif
