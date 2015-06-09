@@ -1,6 +1,4 @@
-#ifndef __GLOBAL_H__
-#define __GLOBAL_H__
-
+#include "global.h"
 
 /* IETF standardized parameters for D-H key exchange [RFC5114]
 *  Link: http://tools.ietf.org/html/rfc5114#section-2.1
@@ -16,4 +14,16 @@ const char df_p_hex2048_str[] = "AD107E1E9123A9D0D660FAA79559C51FA20D64E5683B9FD
 // 224-bit prime order
 const char df_g_hex2048_str[] = "AC4032EF4F2D9AE39DF30B5C8FFDAC506CDEBE7B89998CAF74866A08CFE4FFE3A6824A4E10B9A6F0DD921F01A70C4AFAAB739D7700C29F52C57DB17C620A8652BE5E9001A8D66AD7C17669101999024AF4D027275AC1348BB8A762D0521BC98AE247150422EA1ED409939D54DA7460CDB5F6C6B250717CBEF180EB34118E98D119529A45D6F834566E3025E316A330EFBB77A86F0C1AB15B051AE3D428C8F8ACB70A8137150B8EEB10E183EDD19963DDD9E263E4770589EF6AA21E7F5F2FF381B539CCE3409D13CD566AFBB48D6C019181E1BCFE94B30269EDFE72FE9B6AA4BD7B5A0F1C71CFFF4C19C418E1F6EC017981BC087F2A7065B384B890D3191F2BFA";
 
-#endif
+
+timespec diff(timespec start, timespec end){
+    timespec temp;
+    if ((end.tv_nsec-start.tv_nsec)<0) {
+        temp.tv_sec = end.tv_sec-start.tv_sec-1;
+        temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+    } else {
+        temp.tv_sec = end.tv_sec-start.tv_sec;
+        temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+    }
+    return temp;
+}
+

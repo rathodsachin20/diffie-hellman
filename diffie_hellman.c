@@ -1,6 +1,7 @@
 #include "diffie_hellman.h"
 
 int diffie_hellman(int random, int nbits){
+    struct timespec tstart = {0,0}, tend = {0,0}, tdiff={0,0};
     BIGNUM *p, *g, *a, *b, *tmp, *key_alice, *key_bob;
     p = BN_new();
     g = BN_new();
@@ -16,7 +17,8 @@ int diffie_hellman(int random, int nbits){
         }
         printf("Generating random primes.\n");
         get_random_prime(nbits, p, 1);
-        get_random_prime(nbits, g, 0);
+        //get_random_prime(nbits, g, 0);
+        BN_hex2bn(&g, "5");
     }
     else if(nbits <= 1024){
         nbits = 1024;
@@ -43,14 +45,25 @@ int diffie_hellman(int random, int nbits){
     fflush(stdout);
     // Binary Method of exponentiation
     printf("\n============= DIFFIE HELLMAN USING BINARY EXPONENTIATION =========\n");
+
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tstart);
     mod_exp_bin(tmp, g, a, p);  // g^a (mod p)
-    mod_exp_bin(key_alice, tmp, b, p);  // g^a (mod p)
+    mod_exp_bin(key_alice, tmp, b, p);  // g^ab (mod p)
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
+
+    tdiff = diff(tstart, tend);
+    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
     printf("Alice's key:\n");
     print_bn(key_alice);
 
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tstart);
     mod_exp_bin(tmp, g, b, p);  // g^a (mod p)
     mod_exp_bin(key_bob, tmp, a, p);  // g^a (mod p)
-    printf("bob's key:\n");
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
+
+    tdiff = diff(tstart, tend);
+    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+    printf("Bob's key:\n");
     print_bn(key_bob);
 
     if(!BN_cmp(key_alice, key_bob)){
@@ -63,14 +76,25 @@ int diffie_hellman(int random, int nbits){
 
     // Montgomery Method of exponentiation
     printf("\n============= DIFFIE HELLMAN USING MONTOGOMERY EXPONENTIATION ========\n");
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tstart);
     mod_exp_montgomery(tmp, g, a, p);  // g^a (mod p)
     mod_exp_montgomery(key_alice, tmp, b, p);  // g^a (mod p)
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
+
+    tdiff = diff(tstart, tend);
+    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+
     printf("Alice's key:\n");
     print_bn(key_alice);
 
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tstart);
     mod_exp_montgomery(tmp, g, b, p);  // g^a (mod p)
-    mod_exp_montgomery(key_bob, tmp, a, p);  // g^a (mod p)
-    printf("bob's key:\n");
+    mod_exp_montgomery(key_bob, tmp, a, p);  // g^ab (mod p)
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
+
+    tdiff = diff(tstart, tend);
+    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+    printf("Bob's key:\n");
     print_bn(key_bob);
 
     if(!BN_cmp(key_alice, key_bob)){

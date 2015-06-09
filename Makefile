@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc -O2
 CFLAGS=-Wall
 LIBS=-lssl -lcrypto
 

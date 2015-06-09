@@ -1,8 +1,6 @@
 #ifndef __BN_UTILS__
 #define __BN_UTILS__
 
-#include <openssl/dh.h>
-#include <openssl/bn.h>
 #include "global.h"
 
 int get_random_prime(int bits, BIGNUM* a, int safe);
