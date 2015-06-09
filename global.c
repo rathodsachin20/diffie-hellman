@@ -27,3 +27,11 @@ timespec diff(timespec start, timespec end){
     return temp;
 }
 
+timespec add(timespec t1, timespec t2){
+    timespec result;
+    result.tv_sec = t1.tv_sec + t2.tv_sec;
+    long nsec = t1.tv_nsec + t2.tv_nsec;
+    result.tv_sec += nsec / 1000000000;
+    result.tv_nsec += nsec % 1000000000;
+    return result;
+}

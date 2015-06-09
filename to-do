@@ -6,7 +6,7 @@ X # diffie hellman implementation
   # create remote clients for key exchange
 X # create a generator g in random num of bits
   # compare with in-built diffie-hellman/montgomery
-  # change montgomery to avoid repeated calulation of n'
-  # al-gamal protocol implementation ?
+X # change montgomery to avoid repeated calulation of n'
+N # al-gamal protocol implementation ?
   # find any modifications to d-f ?
   # clean-up the code and add readme

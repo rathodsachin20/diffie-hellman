@@ -22,5 +22,6 @@ extern const char df_p_hex2048_str[];
 extern const char df_g_hex2048_str[];
 
 timespec diff(timespec start, timespec end);
+timespec add(timespec t1, timespec t2);
 
 #endif

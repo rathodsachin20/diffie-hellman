@@ -61,6 +61,13 @@ int egcd_mod(BIGNUM* r, BIGNUM* n, BIGNUM* rp, BIGNUM* np){
     return 1;
 }
 
+int egcd_mod2(BIGNUM* r, BIGNUM* n, BIGNUM* rp, BIGNUM* np, BN_CTX *ctx){
+    BN_mod_inverse(rp, r, n, ctx);  // rp = r_inv (mod n)
+    BN_mul(np, r, rp, ctx);  // r*r_inv
+    BN_sub_word(np, 1);  // r*r_inv - 1
+    BN_div(np, NULL, np, n, ctx);
+}
+
 int get_r_from_n(BIGNUM* r, BIGNUM* n){
     BN_one(r);
     int len = BN_num_bits(n);
@@ -68,52 +75,38 @@ int get_r_from_n(BIGNUM* r, BIGNUM* n){
     return 1;
 }
 
-int monpro(BIGNUM* result, BIGNUM* a, BIGNUM* b, BIGNUM* n, BIGNUM* r, BIGNUM* n_, BIGNUM* r_){
-    BIGNUM *t, *u, *m, *tmp, *tmp1;
-    BN_CTX * ctx = BN_CTX_new();
+int monpro(BIGNUM* result, BIGNUM* a, BIGNUM* b, BIGNUM* n, BIGNUM* r, BIGNUM* n_, BIGNUM* r_, BN_CTX * ctx){
+    BIGNUM *t, *u, *tmp;
     t = BN_new();
     u = BN_new();
-    m = BN_new();
     tmp = BN_new();
-    tmp1 = BN_new();
     int len = BN_num_bits(n);
 
-    //BN_mul(n_, n_, -1, ctx);
-    //printf("r_, n_:\n");
-    //print_bn(r_);
-    //print_bn(n_);
-
     BN_mul(t, a, b, ctx);
-    BN_mul(tmp, t, n_, ctx);
-    BN_mod(m, tmp, r, ctx);
+    BN_mul(u, t, n_, ctx);
+    BN_mod(u, u, r, ctx);
 
-    BN_mul(tmp, m, n, ctx);
-    BN_add(tmp, tmp, t);
-    //BN_div(tmp, NULL, tmp, r, ctx);
-    //print_bn(tmp);
-    BN_rshift(tmp, tmp, len); // just shift for division, as r is power of 2
-    //print_bn(tmp);
+    BN_mul(u, u, n, ctx);  // u = m*n, m=t*n' (mod r)
+    BN_add(u, u, t);       // u = m*n +t
+    BN_rshift(u, u, len); // just shift for division, as r is power of 2  // u = (mn+t) / r
 
-    BN_copy(tmp1, tmp);
-    BN_sub(tmp1, tmp1, n);
-    if(!(tmp1->neg)){
-        BN_copy(tmp, tmp1);
+    BN_copy(tmp, u);
+    BN_sub(tmp, tmp, n);
+    if(!(tmp->neg)){
+        BN_copy(result, tmp);
+    }
+    else{
+        BN_copy(result, u);
     }
 
-    BN_copy(result, tmp);
-
-    BN_CTX_free(ctx);
     BN_clear_free(t);
     BN_clear_free(u);
-    BN_clear_free(m);
     BN_clear_free(tmp);
-    BN_clear_free(tmp1);
     return 1;
 }
 
-int mod_mult_montgomery(BIGNUM* result, BIGNUM* a, BIGNUM* b, BIGNUM* n, BIGNUM* r, BIGNUM* n_, BIGNUM* r_){
+int mod_mult_montgomery(BIGNUM* result, BIGNUM* a, BIGNUM* b, BIGNUM* n, BIGNUM* r, BIGNUM* n_, BIGNUM* r_, BN_CTX *ctx){
     BIGNUM *a_, *b_, *c_, *one;
-    BN_CTX * ctx = BN_CTX_new();
     a_ = BN_new();
     b_ = BN_new();
     c_ = BN_new();
@@ -122,10 +115,9 @@ int mod_mult_montgomery(BIGNUM* result, BIGNUM* a, BIGNUM* b, BIGNUM* n, BIGNUM*
 
     BN_mod_mul(a_, a, r, n, ctx);
     BN_mod_mul(b_, b, r, n, ctx);
-    monpro(c_, a_, b_, n, r, n_, r_);
-    monpro(result, c_, one, n, r, n_, r_);
+    monpro(c_, a_, b_, n, r, n_, r_, ctx);
+    monpro(result, c_, one, n, r, n_, r_, ctx);
     
-    BN_CTX_free(ctx);
     BN_clear_free(a_);
     BN_clear_free(b_);
     BN_clear_free(c_);
@@ -145,12 +137,11 @@ int mod_exp_montgomery(BIGNUM* result, BIGNUM* m, BIGNUM* e, BIGNUM* n){
     // Get r from n
     get_r_from_n(r, n);
     // Get n'
-    egcd_mod(r, n, r_, n_);
-    mod_mult_montgomery(m_, m, r, n, r, n_, r_);
-    //BN_mod_mul(m_, m, r, n, ctx);
-    //printf("m_:");
-    //print_bn(m_);
-    BN_mod(c_, r, n, ctx);
+    //egcd_mod(r, n, r_, n_);
+    egcd_mod2(r, n, r_, n_, ctx);
+    //mod_mult_montgomery(m_, m, r, n, r, n_, r_, ctx);
+    BN_mod_mul(m_, m, r, n, ctx);  // m_ = m*r (mod n)
+    BN_mod(c_, r, n, ctx);   // c_ = 1*r (mod n)
 
     int len = BN_num_bytes(e);
     char* to = (char*) malloc(len*sizeof(char));
@@ -176,16 +167,16 @@ int mod_exp_montgomery(BIGNUM* result, BIGNUM* m, BIGNUM* e, BIGNUM* n){
     for(i; i<bin_len; i++){
         c = to[i];
         for(j; j>=0; j--){
-            monpro(c_, c_, c_, n, r, n_, r_);
+            monpro(c_, c_, c_, n, r, n_, r_, ctx);
             //printf("c_:");
             //print_bn(c_);
             if(c & (1<<j)){
-                monpro(c_, m_, c_, n, r, n_, r_);
+                monpro(c_, m_, c_, n, r, n_, r_, ctx);
             }
         }
         j = 7;
     }
-    monpro(result, c_, one, n, r, n_, r_);
+    monpro(result, c_, one, n, r, n_, r_, ctx);
 
     BN_CTX_free(ctx);
     BN_clear_free(r);

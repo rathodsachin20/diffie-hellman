@@ -3,6 +3,7 @@
 int diffie_hellman(int random, int nbits){
     struct timespec tstart = {0,0}, tend = {0,0}, tdiff={0,0};
     BIGNUM *p, *g, *a, *b, *tmp, *key_alice, *key_bob;
+    BN_CTX * ctx = BN_CTX_new();
     p = BN_new();
     g = BN_new();
     a = BN_new();
@@ -15,7 +16,7 @@ int diffie_hellman(int random, int nbits){
             printf("Try again with number of bits >= 8\n");
             exit(0);
         }
-        printf("Generating random prime p.\n");
+        printf("Generating random safe prime p.\n");
         get_random_prime(nbits, p, 1);
         //get_random_prime(nbits, g, 0);
         BN_hex2bn(&g, "5");
@@ -109,7 +110,38 @@ int diffie_hellman(int random, int nbits){
     } 
     printf("\n=================================================================\n");
 
+    // Openssl Method of exponentiation
+    printf("\n============= DIFFIE HELLMAN USING OPENSSL EXPONENTIATION ========\n");
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tstart);
+    BN_mod_exp(tmp, g, a, p, ctx);  // g^a (mod p)
+    BN_mod_exp(key_alice, tmp, b, p, ctx);  // g^a (mod p)
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
 
+    tdiff = diff(tstart, tend);
+    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+
+    printf("Alice's key:\n");
+    print_bn(key_alice);
+
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tstart);
+    BN_mod_exp(tmp, g, b, p, ctx);  // g^a (mod p)
+    BN_mod_exp(key_bob, tmp, a, p, ctx);  // g^ab (mod p)
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tend);
+
+    tdiff = diff(tstart, tend);
+    printf("Time taken: %lds %ldns\n", tdiff.tv_sec, tdiff.tv_nsec);
+    printf("Bob's key:\n");
+    print_bn(key_bob);
+
+    if(!BN_cmp(key_alice, key_bob)){
+        printf("Keys match! :)\n");
+    }
+    else {
+        printf("Keys do not match! :(\n");
+    } 
+    printf("\n=================================================================\n");
+
+    BN_CTX_free(ctx);
     BN_clear_free(p);
     BN_clear_free(g);
     BN_clear_free(a);
