@@ -44,7 +44,7 @@ int main(int argc, char** argv){
         diffie_hellman(1, nbits);
     }
     else{
-        printf("\nUsage: %s \n or %s <num_bits> : 1024/2048 bits\n or %s 1 <numbits> : Given number of bits.", argv[0], argv[0], argv[0]);
+        printf("\nUsage: %s : 1024 bits\n or %s <num_bits> : 1024/2048 bits\n or %s 1 <numbits> : Given number of bits.\n\n", argv[0], argv[0], argv[0]);
     }
 
     return 0;

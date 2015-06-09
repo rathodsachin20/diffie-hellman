@@ -1,0 +1,10 @@
+
+X # binary method of exponentiation
+X # montgomery method of exponetiation
+X # diffie hellman implementation
+  # time-calculations and comparisons
+  # compare with in-built diffie-hellman/montgomery
+  # change montgomery to avoid repeated calulation of n'
+  # al-gamal protocol implementation ?
+  # find any modifications to d-f ?
+  # clean-up the code and add readme
