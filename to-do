@@ -2,7 +2,7 @@
 X # binary method of exponentiation
 X # montgomery method of exponetiation
 X # diffie hellman implementation
-  # time-calculations and comparisons
+X # time-calculations and comparisons
   # create remote clients for key exchange
 X # create a generator g in random num of bits
 X # compare with in-built diffie-hellman/montgomery
