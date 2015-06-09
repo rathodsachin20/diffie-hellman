@@ -21,10 +21,10 @@ global: global.c
 	$(CC) -c global.c
 
 alice: alice.c all
-	$(CC) $(OBJ) -o alice alice.c -lpthread -lcrypto -lssl
+	$(CC) $(OBJ) -o alice alice.c $(LIBS)
 
 bob: bob.c all
-	$(CC) $(OBJ) -o bob bob.c -lpthread -lcrypto -lssl
+	$(CC) $(OBJ) -o bob bob.c $(LIBS)
 
 clean:
 	rm -rf *.o, main, alice, bob
