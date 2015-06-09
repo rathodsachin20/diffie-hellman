@@ -56,6 +56,6 @@ timespec avg(timespec t1, timespec t2){
 }
 
 void print_time(timespec t){
-    printf("%lds %ldnsec = %.9f s\n", t.tv_sec, t.tv_nsec, (float)(t.tv_sec*1000000000+t.tv_nsec)/1000000000);
+    printf("%lds   %ldnsec \t= %.9f s\n", t.tv_sec, t.tv_nsec, (float)(t.tv_sec*1000000000+t.tv_nsec)/1000000000);
 }
 

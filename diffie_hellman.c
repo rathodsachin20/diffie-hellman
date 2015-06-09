@@ -1,7 +1,7 @@
 #include "diffie_hellman.h"
 
 int diffie_hellman(int random, int nbits){
-    struct timespec tstart = {0,0}, tend = {0,0}, tdiff1={0,0}, tdiff2={0,0}, tavg={0,0};
+    struct timespec tstart = {0,0}, tend = {0,0}, tdiff1={0,0}, tdiff2={0,0}, tavg1={0,0}, tavg2={0,0}, tavg3={0,0};
     BIGNUM *p, *g, *a, *b, *tmp, *key_alice, *key_bob;
     BN_CTX * ctx = BN_CTX_new();
     p = BN_new();
@@ -73,16 +73,16 @@ int diffie_hellman(int random, int nbits){
     printf("Bob's key:\n");
     print_bn(key_bob);
 
-    tavg = avg(tdiff1, tdiff2);
+    tavg1 = avg(tdiff1, tdiff2);
     printf("======> Avg Time taken:");
-    print_time(tavg);
+    print_time(tavg1);
     if(!BN_cmp(key_alice, key_bob)){
         printf("Keys match! :)\n");
     }
     else {
         printf("Keys do not match! :(\n");
     } 
-    printf("\n=================================================================\n");
+    //printf("\n=================================================================\n");
 
     // Montgomery Method of exponentiation
     printf("\n============= DIFFIE HELLMAN USING MONTOGOMERY EXPONENTIATION ========\n");
@@ -109,16 +109,16 @@ int diffie_hellman(int random, int nbits){
     printf("Bob's key:\n");
     print_bn(key_bob);
 
-    tavg = avg(tdiff1, tdiff2);
+    tavg2 = avg(tdiff1, tdiff2);
     printf("======> Avg Time taken:");
-    print_time(tavg);
+    print_time(tavg2);
     if(!BN_cmp(key_alice, key_bob)){
         printf("Keys match! :)\n");
     }
     else {
         printf("Keys do not match! :(\n");
     } 
-    printf("\n=================================================================\n");
+    //printf("\n=================================================================\n");
 
     // Openssl Method of exponentiation
     printf("\n============= DIFFIE HELLMAN USING OPENSSL EXPONENTIATION ========\n");
@@ -145,9 +145,9 @@ int diffie_hellman(int random, int nbits){
     printf("Bob's key:\n");
     print_bn(key_bob);
 
-    tavg = avg(tdiff1, tdiff2);
+    tavg3 = avg(tdiff1, tdiff2);
     printf("=======> Avg Time taken:");
-    print_time(tavg);
+    print_time(tavg3);
     if(!BN_cmp(key_alice, key_bob)){
         printf("Keys match! :)\n");
     }
@@ -155,6 +155,16 @@ int diffie_hellman(int random, int nbits){
         printf("Keys do not match! :(\n");
     } 
     printf("\n=================================================================\n");
+
+    printf("======== Summary =========\n");
+    printf("Keysize:%d\n", nbits);
+    printf("Avg calculation times for Alice and Bob:\n");
+    printf("1. Binary exponentiation:    \t");
+    print_time(tavg1);
+    printf("2. Montgomery exponentiation:\t");
+    print_time(tavg2);
+    printf("3. Openssl exponentiation:   \t");
+    print_time(tavg3);
 
     BN_CTX_free(ctx);
     BN_clear_free(p);
