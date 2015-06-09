@@ -1,8 +1,10 @@
-#include "bn_utils.h"
-#include "montgomery.h"
+//#include "bn_utils.h"
+//#include "montgomery.h"
+#include "diffie_hellman.h"
 
 
-int main(){
+int main(int argc, char** argv){
+    /*
     BIGNUM* m = BN_new();
     BIGNUM* e = BN_new();
     BIGNUM* n = BN_new();
@@ -24,15 +26,26 @@ int main(){
     print_bn(n);
     print_bn(result);
     
-    /*monpro(result, m, e, n);
-    printf("m,e,n, result:\n");
-    print_bn(m);
-    print_bn(e);
-    print_bn(n);
-    print_bn(result);*/
     BN_clear_free(m);
     BN_clear_free(e);
     BN_clear_free(n);
+    */
+    if(argc <= 1){
+        diffie_hellman(0, 1024);
+    }
+    else if (argc == 2){
+        int nbits;
+        nbits = atoi(argv[1]);
+        diffie_hellman(0, nbits);
+    }
+    else if (argc == 3){
+        int nbits;
+        nbits = atoi(argv[2]);
+        diffie_hellman(1, nbits);
+    }
+    else{
+        printf("\nUsage: %s \n or %s <num_bits> : 1024/2048 bits\n or %s 1 <numbits> : Given number of bits.", argv[0], argv[0], argv[0]);
+    }
 
     return 0;
 }

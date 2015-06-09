@@ -3,6 +3,7 @@
 
 #include <openssl/bn.h>
 #include <stdio.h>
+#include "bn_utils.h"
 
 int egcd(BIGNUM* a, BIGNUM* b, BIGNUM* a_, BIGNUM* b_);
 int egcd_mod(BIGNUM* r, BIGNUM* n, BIGNUM* rp, BIGNUM* np);

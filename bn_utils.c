@@ -1,11 +1,12 @@
 #include "bn_utils.h"
 
 
-int get_random_prime(int bits, BIGNUM* a){
+int get_random_prime(int bits, BIGNUM* a, int safe){
     //BIGNUM *a;
     //a = BN_new();
-
-    BN_generate_prime(a, bits, 1, NULL, NULL, NULL, NULL); // create 'safe' prime
+    if(safe)
+        safe = 1;
+    BN_generate_prime(a, bits, safe, NULL, NULL, NULL, NULL); // create 'safe' prime
     return 1;
 }
 

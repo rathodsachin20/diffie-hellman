@@ -1,5 +1,4 @@
 #include "montgomery.h"
-#include "bn_utils.h"
 
 int egcd(BIGNUM* a, BIGNUM* b, BIGNUM* a_, BIGNUM* b_){
     BIGNUM *g0, *g1, *u0, *u1, *v0, *v1, *q, *tmp, *mul;
@@ -157,8 +156,8 @@ int mod_exp_montgomery(BIGNUM* result, BIGNUM* m, BIGNUM* e, BIGNUM* n){
     get_r_from_n(r, n);
     mod_mult_montgomery(m_, m, r, n);
     //BN_mod_mul(m_, m, r, n, ctx);
-    printf("m_:");
-    print_bn(m_);
+    //printf("m_:");
+    //print_bn(m_);
     BN_mod(c_, r, n, ctx);
 
     int len = BN_num_bytes(e);
