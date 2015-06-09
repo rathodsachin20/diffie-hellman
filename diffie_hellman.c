@@ -15,7 +15,7 @@ int diffie_hellman(int random, int nbits){
             printf("Try again with number of bits >= 8\n");
             exit(0);
         }
-        printf("Generating random primes.\n");
+        printf("Generating random prime p.\n");
         get_random_prime(nbits, p, 1);
         //get_random_prime(nbits, g, 0);
         BN_hex2bn(&g, "5");
@@ -31,7 +31,11 @@ int diffie_hellman(int random, int nbits){
         BN_hex2bn(&g, df_g_hex1024_str);
     }
     printf("=========> Number of bits:%d <==========\n", nbits);
+    printf("Generating random prime a.\n");
+    fflush(stdout);
     get_random_prime(nbits, a, 0);
+    printf("Generating random prime b.\n");
+    fflush(stdout);
     get_random_prime(nbits, b, 0);
 
     printf("p: ");
