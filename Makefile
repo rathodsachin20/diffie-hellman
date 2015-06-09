@@ -1,6 +1,6 @@
 CC=gcc -O2
 CFLAGS=-Wall
-LIBS=-lssl -lcrypto
+LIBS=-lssl -lcrypto -lrt
 
 SRC=main.c
 OBJ=bn_utils.o montgomery.o diffie_hellman.o global.o
