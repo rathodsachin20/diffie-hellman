@@ -1,0 +1,23 @@
+
+# Connecting Via serial port:
+  http://udoo.org/tutorial/connecting-via-serial-cable/
+  1. Type 'dmesg' or 'dmesg | grep USB'
+     You should see this line at the end:
+     'usb 2-2.1: cp21x converter now attached to tty'
+
+  2. Install Minicom:
+       sudo apt-get update
+       sudo apt-get install minicom
+     Open Minicom and configure it (only the first time) using the following command:
+       sudo minicom -sw
+     Go to “Serial port setup” and edit as follow:
+       Serial Device: /dev/ttyUSB0
+       Hardware Flow Control: No
+       Software Flow Control: No
+     Press exit and “Save setup as dfl”
+     Exit from Minicom
+     Let’s give proper access permissions to serial port with:
+       sudo chmod 666 /dev/ttyUSB0
+
+  3. Now we can start listening with:
+       sudo minicom -w
